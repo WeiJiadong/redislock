@@ -14,18 +14,23 @@ type RWMutex struct {
 }
 
 // RWLock 读写锁加写锁
-func (l *RWMutex) Lock(ctx context.Context, client *redis.Client) error {
-	return execLuaScript(ctx, client, l.key, rWLockScript, "w", l.lease/time.Second, l.val)
+func (rw *RWMutex) WLock(ctx context.Context, client *redis.Client) error {
+	return execLuaScript(ctx, client, rw.key, wLockScript, rw.val, rw.lease/time.Second)
 }
 
 // RWLock 读写锁加读锁
-func (l *RWMutex) RWLock(ctx context.Context, client *redis.Client) error {
-	return execLuaScript(ctx, client, l.key, rWLockScript, "r", l.lease/time.Second, l.val)
+func (rw *RWMutex) RLock(ctx context.Context, client *redis.Client) error {
+	return execLuaScript(ctx, client, rw.key, rLockScript, rw.val, rw.lease/time.Second)
 }
 
-// Unlock 读写锁解锁
-func (l *RWMutex) Unlock(ctx context.Context, client *redis.Client) error {
-	return execLuaScript(ctx, client, l.key, rWUnlockScript, l.val)
+// Unlock 读写锁解写锁
+func (rw *RWMutex) WUnlock(ctx context.Context, client *redis.Client) error {
+	return execLuaScript(ctx, client, rw.key, wUnlockScript, rw.val)
+}
+
+// Unlock 读写锁解读锁
+func (rw *RWMutex) RUnlock(ctx context.Context, client *redis.Client) error {
+	return execLuaScript(ctx, client, rw.key, rUnlockScript, rw.val)
 }
 
 // NewRWMutex 读写锁构造函数

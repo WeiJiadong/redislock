@@ -24,10 +24,14 @@ var (
 	refreshScript string
 	//go:embed script/unlock.lua
 	unLockScript string
-	//go:embed script/rwlock.lua
-	rWLockScript string
-	//go:embed script/rwunlock.lua
-	rWUnlockScript string
+	//go:embed script/rlock.lua
+	rLockScript string
+	//go:embed script/runlock.lua
+	rUnlockScript string
+	//go:embed script/wlock.lua
+	wLockScript string
+	//go:embed script/wunlock.lua
+	wUnlockScript string
 )
 
 // execLuaScript 执行lua脚本

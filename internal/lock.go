@@ -14,7 +14,7 @@ type Mutex struct {
 
 // Lock 互斥锁加锁
 func (l *Mutex) Lock(ctx context.Context, client *redis.Client) (bool, error) {
-	return client.SetNX(ctx, l.key, l.val, l.lease/time.Second).Result()
+	return client.SetNX(ctx, l.key, l.val, l.lease).Result()
 }
 
 // Unlock 互斥锁解锁
