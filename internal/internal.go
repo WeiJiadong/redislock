@@ -9,34 +9,34 @@ import (
 	"github.com/go-redis/redis/v9"
 )
 
-// lockInfo 锁结构信息
-type lockInfo struct {
-	key   string
-	val   string
-	lease time.Duration
+// LockInfo 锁结构信息
+type LockInfo struct {
+	Key   string
+	Val   string
+	Lease time.Duration
 }
 
 // lua脚本变量定义，直接将lua脚本加载进二进制
 var (
 	//go:embed script/lock_or_refresh.lua
-	lockOrRefreshScript string
+	LockOrRefreshScript string
 	//go:embed script/refresh.lua
-	refreshScript string
+	RefreshScript string
 	//go:embed script/unlock.lua
-	unLockScript string
+	UnLockScript string
 	//go:embed script/rlock.lua
-	rLockScript string
+	RLockScript string
 	//go:embed script/runlock.lua
-	rUnlockScript string
+	RUnlockScript string
 	//go:embed script/wlock.lua
-	wLockScript string
+	WLockScript string
 	//go:embed script/wunlock.lua
-	wUnlockScript string
+	WUnlockScript string
 )
 
-// execLuaScript 执行lua脚本
-func execLuaScript(ctx context.Context, client *redis.Client, key, script string, vals ...any) error {
+// ExecLuaScript 执行lua脚本
+func ExecLuaScript(ctx context.Context, client *redis.Client, Key, script string, Vals ...any) error {
 	lua := redis.NewScript(script)
-	_, err := lua.Run(ctx, client, []string{key}, vals).Result()
+	_, err := lua.Run(ctx, client, []string{Key}, Vals).Result()
 	return err
 }
