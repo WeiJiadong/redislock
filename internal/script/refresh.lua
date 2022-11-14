@@ -1,5 +1,6 @@
 if redis.call("GET", KEYS[1]) == ARGV[1] then
-	return redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
+	redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
+	return "ok"
 else
-	return "FAIL"
+	return "lock not exist"
 end

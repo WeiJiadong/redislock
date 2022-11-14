@@ -4,6 +4,7 @@ package internal
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v9"
@@ -37,6 +38,16 @@ var (
 // ExecLuaScript 执行lua脚本
 func ExecLuaScript(ctx context.Context, client *redis.Client, Key, script string, Vals ...any) error {
 	lua := redis.NewScript(script)
-	_, err := lua.Run(ctx, client, []string{Key}, Vals).Result()
-	return err
+	val, err := lua.Eval(ctx, client, []string{Key}, Vals...).Result()
+	if err != nil {
+		return err
+	}
+	msg, ok := val.(string)
+	if !ok {
+		return errors.New(ErrTypeNotMatch)
+	}
+	if msg != OK {
+		return errors.New(msg)
+	}
+	return nil
 }

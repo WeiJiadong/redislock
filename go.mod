@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/go-redis/redis/v9 v9.0.0-rc.1
 	github.com/magiconair/properties v1.8.6
+	gopkg.in/go-playground/assert.v1 v1.2.1
 )
 
 require (

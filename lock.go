@@ -2,6 +2,7 @@ package redislock
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/WeiJiadong/redislock/internal"
@@ -14,8 +15,15 @@ type Mutex struct {
 }
 
 // Lock 互斥锁加锁
-func (l *Mutex) Lock(ctx context.Context, client *redis.Client) (bool, error) {
-	return client.SetNX(ctx, l.Key, l.Val, l.Lease).Result()
+func (l *Mutex) Lock(ctx context.Context, client *redis.Client) error {
+	ok, err := client.SetNX(ctx, l.Key, l.Val, l.Lease).Result()
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return errors.New(internal.ErrLockFailed)
+	}
+	return nil
 }
 
 // Unlock 互斥锁解锁

@@ -1,10 +1,11 @@
 local wkey = KEYS[1]
 local subkey = "w"
 local seconds = tonumber(ARGV[2])
+local val = ARGV[1]
 local wval = redis.call("HGET", wkey, subkey)
-if wval ~= false and wval == ARGV[2] then
-	return "FAIL"
+if wval ~= false then
+	return "write lock conflict"
 end
-redis.call("HSET", wkey, subkey, ARGV[1])
+redis.call("HSET", wkey, subkey, val)
 redis.call("EXPIRE", wkey, seconds)
-return "OK"
+return "ok"

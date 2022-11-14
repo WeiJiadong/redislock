@@ -5,4 +5,4 @@ local hlen = redis.call("HLEN", rkey)
 if hlen == 0 then
 	redis.call("DEL", rkey)
 end
-return "OK"
+return "ok"

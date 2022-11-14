@@ -2,11 +2,13 @@ package redislock
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
+	"github.com/WeiJiadong/redislock/internal"
 	"github.com/go-redis/redis/v9"
-	"github.com/magiconair/properties/assert"
+	"gopkg.in/go-playground/assert.v1"
 )
 
 func getClient(ctx context.Context) *redis.Client {
@@ -59,9 +61,7 @@ func TestNewMutex(t *testing.T) {
 			cli.Del(ctx, tt.args.Key)
 			locker := NewMutex(tt.args.Key, tt.args.Val, tt.args.Lease)
 			// 先加锁
-			ok, err := locker.Lock(ctx, cli)
-			assert.Equal(t, ok, true)
-			assert.Equal(t, err, tt.wants.err)
+			assert.Equal(t, locker.Lock(ctx, cli), tt.wants.err)
 			// check 是不是租约的时间
 			ttl, err := cli.TTL(ctx, tt.args.Key).Result()
 			assert.Equal(t, ttl, tt.wants.ttl)
@@ -97,6 +97,12 @@ func TestNewMutex(t *testing.T) {
 			cnt, err = cli.Exists(ctx, tt.args.Key).Result()
 			assert.Equal(t, cnt, tt.wants.cnt)
 			assert.Equal(t, err, tt.wants.err)
+			// 加两次锁
+			assert.Equal(t, locker.Lock(ctx, cli), tt.wants.err)
+			assert.Equal(t, locker.Lock(ctx, cli), errors.New(internal.ErrLockFailed))
+			// 释放锁，对不存在的锁进行续约
+			assert.Equal(t, locker.Unlock(ctx, cli), tt.wants.err)
+			assert.Equal(t, locker.Refresh(ctx, cli), errors.New(internal.ErrLockNotExist))
 		})
 	}
 }

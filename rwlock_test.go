@@ -2,9 +2,11 @@ package redislock
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
+	"github.com/WeiJiadong/redislock/internal"
 	"github.com/magiconair/properties/assert"
 )
 
@@ -73,6 +75,11 @@ func TestNewRWMutex(t *testing.T) {
 			cnt, err = cli.Exists(ctx, tt.args.Key).Result()
 			assert.Equal(t, cnt, tt.wants.cnt)
 			assert.Equal(t, err, tt.wants.err)
+			// 重复加写锁
+			assert.Equal(t, locker.WLock(ctx, cli), tt.wants.err)
+			assert.Equal(t, locker.WLock(ctx, cli), errors.New(internal.ErrWLockConflict))
+			// 加读锁
+			assert.Equal(t, locker.RLock(ctx, cli), errors.New(internal.ErrHadWLock))
 		})
 	}
 }
