@@ -17,6 +17,11 @@ type LockInfo struct {
 	Lease time.Duration
 }
 
+type CasVal struct {
+	Val     any
+	Version int64
+}
+
 // lua脚本变量定义，直接将lua脚本加载进二进制
 var (
 	//go:embed script/lock_or_refresh.lua
@@ -33,6 +38,8 @@ var (
 	WLockScript string
 	//go:embed script/wunlock.lua
 	WUnlockScript string
+	//go:embed script/cas.lua
+	CasScript string
 )
 
 // ExecLuaScript 执行lua脚本

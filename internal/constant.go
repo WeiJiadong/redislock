@@ -8,4 +8,5 @@ const (
 	ErrHadWLock      = "had write lock, lock read lock failed" // 已经有写锁，加读锁失败
 	ErrLockNotExist  = "lock not exist"                        // 锁不存在
 	ErrLockFailed    = "lock failed"                           // 加锁失败
+	ErrCasConflict   = "cas conflict"                          // cas 冲突
 )
